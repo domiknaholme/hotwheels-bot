@@ -1,3 +1,5 @@
+import os
+import json
 import logging
 import uuid
 from telegram import Update
@@ -5,8 +7,14 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 import firebase_admin
 from firebase_admin import credentials, db
 
-# Инициализация Firebase
-cred = credentials.Certificate('firebase-key.json')
+# Получаем JSON ключ из переменной окружения
+firebase_key_json = os.environ.get('FIREBASE_CREDENTIALS')
+if not firebase_key_json:
+    raise Exception("Переменная окружения FIREBASE_CREDENTIALS не установлена")
+
+cred_dict = json.loads(firebase_key_json)
+cred = credentials.Certificate(cred_dict)
+
 firebase_admin.initialize_app(cred, {
     'databaseURL': "https://hot-wheels-1-default-rtdb.europe-west1.firebasedatabase.app/"
 })
@@ -75,7 +83,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def main():
-    TELEGRAM_TOKEN = "твой_токен_сюда"
+    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+    if not TELEGRAM_TOKEN:
+        raise Exception("Переменная окружения TELEGRAM_TOKEN не установлена")
 
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 
