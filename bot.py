@@ -1,35 +1,4 @@
 import os
-import json
-import logging
-import uuid
-
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-
-import firebase_admin
-from firebase_admin import credentials, db
-
-# Получаем JSON ключ из переменной окружения
-firebase_key_json = os.environ.get('FIREBASE_CREDENTIALS')
-if not firebase_key_json:
-    raise Exception("Переменная окружения FIREBASE_CREDENTIALS не установлена")
-
-cred_dict = json.loads(firebase_key_json)
-
-# Важный момент: заменяем экранированные \n на реальные переводы строк
-if 'private_key' in cred_dict:
-    cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
-
-cred = credentials.Certificate(cred_dict)
-
-firebase_admin.initialize_app(cred, {
-    'databaseURL': "https://hot-wheels-1-default-rtdb.europe-west1.firebasedatabase.app/"
-})
-
-root_ref = db.reference('/activation_codes')
-
-logging.basicConfig(
-import os
 import sys
 import json
 import logging
